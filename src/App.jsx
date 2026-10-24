@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink, Route, Routes } from 'react-router-dom';
 
 function Dashboard() {
@@ -12,19 +11,20 @@ function Dashboard() {
 
     async function loadEmployees() {
       try {
-        const response = await fetch('https://jsonplaceholder.typicode.com/users', {
-          signal: controller.signal,
-        });
+        const response = await fetch(
+          'https://jsonplaceholder.typicode.com/users',
+          { signal: controller.signal }
+        );
 
         if (!response.ok) {
-          throw new Error(`The employee list could not be loaded (HTTP ${response.status}).`);
+          throw new Error('Failed to load employees.');
         }
 
         const users = await response.json();
         setEmployees(users);
-      } catch (loadError) {
-        if (loadError.name !== 'AbortError') {
-          setError(loadError.message || 'The employee list could not be loaded.');
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          setError(err.message || 'Something went wrong.');
         }
       } finally {
         if (!controller.signal.aborted) {
@@ -42,13 +42,16 @@ function Dashboard() {
       <div className="page-heading">
         <div>
           <p className="eyebrow">PEOPLE OVERVIEW</p>
-          <h1>Employee dashboard</h1>
+          <h1>Employee Dashboard</h1>
           <p className="heading-description">
             A quick look at the people in your organization.
           </p>
         </div>
-        <div className="employee-count" aria-live="polite">
-          <span className="count-number">{loading ? '—' : employees.length}</span>
+
+        <div className="employee-count">
+          <span className="count-number">
+            {loading ? '—' : employees.length}
+          </span>
           <span className="count-label">team members</span>
         </div>
       </div>
@@ -57,47 +60,62 @@ function Dashboard() {
         <table className="table employee-table align-middle mb-0">
           <thead>
             <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Name</th>
-              <th scope="col">Email address</th>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email address</th>
             </tr>
           </thead>
+
           <tbody>
             {loading && (
               <tr>
                 <td colSpan="3" className="table-message">
-                  <span className="spinner-border spinner-border-sm me-2" role="status" />
-                  Loading employees…
+                  Loading employees...
                 </td>
               </tr>
             )}
+
             {!loading && error && (
               <tr>
-                <td colSpan="3" className="table-message text-danger" role="alert">
+                <td colSpan="3" className="table-message text-danger">
                   {error}
                 </td>
               </tr>
             )}
+
             {!loading && !error && employees.length === 0 && (
               <tr>
-                <td colSpan="3" className="table-message">No employees found.</td>
-              </tr>
-            )}
-            {!loading && !error && employees.map((employee) => (
-              <tr key={employee.id}>
-                <td><span className="id-badge">{employee.id}</span></td>
-                <td className="employee-name">{employee.name}</td>
-                <td>
-                  <a className="email-link" href={`mailto:${employee.email}`}>
-                    {employee.email}
-                  </a>
+                <td colSpan="3" className="table-message">
+                  No employees found.
                 </td>
               </tr>
-            ))}
+            )}
+
+            {!loading &&
+              !error &&
+              employees.map((employee) => (
+                <tr key={employee.id}>
+                  <td>
+                    <span className="id-badge">{employee.id}</span>
+                  </td>
+                  <td className="employee-name">{employee.name}</td>
+                  <td>
+                    <a
+                      className="email-link"
+                      href={`mailto:${employee.email}`}
+                    >
+                      {employee.email}
+                    </a>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
-      <p className="data-source">Showing employee details from the JSONPlaceholder API.</p>
+
+      <p className="data-source">
+        Employee details are fetched from the JSONPlaceholder API.
+      </p>
     </section>
   );
 }
@@ -107,7 +125,7 @@ function EmployeeForm() {
 
   function handleSubmit(event) {
     event.preventDefault();
-    setNotice('This demo form does not send or save employee data.');
+    setNotice('This demo form does not save employee data.');
   }
 
   return (
@@ -115,9 +133,9 @@ function EmployeeForm() {
       <div className="page-heading">
         <div>
           <p className="eyebrow">TEAM DIRECTORY</p>
-          <h1>Employee form</h1>
+          <h1>Employee Form</h1>
           <p className="heading-description">
-            Enter employee details below. This demo does not submit data to a server.
+            Enter employee details below.
           </p>
         </div>
       </div>
@@ -125,62 +143,73 @@ function EmployeeForm() {
       <form onSubmit={handleSubmit}>
         <div className="row g-4">
           <div className="col-md-6">
-            <label className="form-label" htmlFor="employee-name">Name</label>
+            <label className="form-label" htmlFor="employee-name">
+              Name
+            </label>
             <input
               className="form-control"
               id="employee-name"
               name="name"
               type="text"
-              placeholder="e.g. Alex Morgan"
-              autoComplete="name"
+              placeholder="Enter employee name"
               required
             />
           </div>
+
           <div className="col-md-6">
-            <label className="form-label" htmlFor="employee-designation">Designation</label>
+            <label className="form-label" htmlFor="employee-designation">
+              Designation
+            </label>
             <input
               className="form-control"
               id="employee-designation"
               name="designation"
               type="text"
-              placeholder="e.g. Product Designer"
+              placeholder="Enter designation"
               required
             />
           </div>
+
           <div className="col-md-6">
-            <label className="form-label" htmlFor="employee-location">Location</label>
+            <label className="form-label" htmlFor="employee-location">
+              Location
+            </label>
             <input
               className="form-control"
               id="employee-location"
               name="location"
               type="text"
-              placeholder="e.g. New York"
-              autoComplete="address-level2"
+              placeholder="Enter location"
               required
             />
           </div>
+
           <div className="col-md-6">
-            <label className="form-label" htmlFor="employee-salary">Salary</label>
-            <div className="input-group">
-              <span className="input-group-text" aria-hidden="true">$</span>
-              <input
-                className="form-control"
-                id="employee-salary"
-                name="salary"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="e.g. 65000"
-                required
-              />
-            </div>
+            <label className="form-label" htmlFor="employee-salary">
+              Salary
+            </label>
+            <input
+              className="form-control"
+              id="employee-salary"
+              name="salary"
+              type="number"
+              min="0"
+              placeholder="Enter salary"
+              required
+            />
           </div>
         </div>
-        <div className="form-footer">
-          <button className="btn btn-primary submit-button" type="submit">
-            Review details
+
+        <div className="form-footer mt-4">
+          <button className="btn btn-primary" type="submit">
+            Submit
           </button>
-          {notice && <p className="form-notice mb-0" role="status">{notice}</p>}
+
+          {notice && (
+            <p className="form-notice mt-3" role="status">
+              {notice}
+            </p>
+          )}
         </div>
       </form>
     </section>
@@ -191,14 +220,22 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="navbar-shell">
-        <nav className="navbar navbar-expand navbar-light container app-navbar" aria-label="Main navigation">
+        <nav
+          className="navbar navbar-expand navbar-light container app-navbar"
+          aria-label="Main navigation"
+        >
           <NavLink className="navbar-brand brand" to="/">
-            <span className="brand-mark" aria-hidden="true">P</span>
+            <span className="brand-mark">P</span>
             PeopleDesk
           </NavLink>
+
           <div className="navbar-nav ms-auto">
-            <NavLink className="nav-link" to="/" end>Home</NavLink>
-            <NavLink className="nav-link" to="/employee-form">Employee form</NavLink>
+            <NavLink className="nav-link" to="/" end>
+              Home
+            </NavLink>
+            <NavLink className="nav-link" to="/employee-form">
+              Employee Form
+            </NavLink>
           </div>
         </nav>
       </header>
@@ -210,131 +247,11 @@ export default function App() {
           <Route path="*" element={<Dashboard />} />
         </Routes>
       </main>
-      <footer className="container app-footer">PeopleDesk <span>·</span> Employee directory</footer>
+
+      <footer className="container app-footer">
+        PeopleDesk · Employee Directory
+      </footer>
     </div>
   );
 }
-=======
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
-
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
-}
-
-export default App
->>>>>>> e04375085b2f7a0971ef3bc6f174e7962f3101be
+              
